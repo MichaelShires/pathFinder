@@ -3,7 +3,82 @@
 #include <cstdlib>
 #include <string>
 #define LINE_SEG 4
+#define MX_LGTH_MP 84
 using namespace std;
+
+void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3], int pSum, int step, int pvPoint, int* addr, int* paddr)
+{
+	for(int i = 0; i < LINE_SEG; i++)
+	{
+		if(map[i][1] == startLoc && map[i][2] != pvPoint)
+		{
+			pSum = pSum+map[i][0];
+			path[step] = i;
+			step++;
+			if(map[i][2] == endLoc)
+			{
+				if(pSum < *addr)
+				{
+					*addr = pSum;
+				}
+			}
+			else
+			{
+				pathFind(endLoc, map[i][1], path, map, pSum, step, startLoc, addr, paddr);
+			}
+		}
+		else if(map[i][2] == startLoc && map[i][2] != pvPoint)
+		{
+			pSum = pSum+map[i][0];
+			path[step] = i;
+			step++;
+			if(map[i][1] == endLoc)
+			{
+				if(pSum < *addr)
+				{
+					*addr = pSum;
+				}
+			}
+			else
+			{
+				pathFind(endLoc, map[i][1], path, map, pSum, step, startLoc, addr, paddr);
+			}
+		}
+	}
+}
+
+struct location {
+	bool type; // true will be point, false is line
+	int location;
+} currentLoc;
+
+int goToFrom(int endLoc, location startLoc, int map[LINE_SEG][3])
+{
+	int path[LINE_SEG] = {0};
+	int* paddr = path;
+	int pDist = MX_LGTH_MP;
+	int* addr = &pDist;
+	int pSum = 0;
+	if(!startLoc.type)
+	{
+		int point1;
+		int point2;
+		point1 = map[startLoc.location][1];
+		point2 = map[startLoc.location][2];
+		pathFind(endLoc, point1, path, map, pSum, 0, 99, addr, paddr);
+		pathFind(endLoc, point2, path, map, pSum, 0, 99, addr, paddr);
+	}
+	else
+	{
+		pathFind(endLoc, startLoc.location, path, map, pSum, 0, 99, addr, paddr);
+	}
+	cout << pDist << endl;
+	for(int i = 0; path[i] != 0; i++)
+	{
+		cout << path[i] << ' ';
+	}
+	cout << endl;
+}
 
 /*
  *Accepts two arguments, a start location and an end location
@@ -20,7 +95,6 @@ int main(int argc, char* argv[]) {
 	string data;
 	ifstream map ("map.csv");
 	getline(map, data, ',');
-
 	cout << data << endl;
 	return 0; 
 }
