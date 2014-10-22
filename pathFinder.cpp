@@ -12,6 +12,7 @@ void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3]
 	{
 		if(map[i][1] == startLoc && map[i][2] != pvPoint)
 		{
+			
 			pSum = pSum+map[i][0];
 			path[step] = i;
 			step++;
@@ -27,7 +28,7 @@ void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3]
 				pathFind(endLoc, map[i][1], path, map, pSum, step, startLoc, addr, paddr);
 			}
 		}
-		else if(map[i][2] == startLoc && map[i][2] != pvPoint)
+		else if(map[i][2] == startLoc && map[i][1] != pvPoint)
 		{
 			pSum = pSum+map[i][0];
 			path[step] = i;
@@ -85,16 +86,44 @@ int goToFrom(int endLoc, location startLoc, int map[LINE_SEG][3])
  * runs off of an insanely basic map at the moment.
  */
 int main(int argc, char* argv[]) { 
-	int mapData[LINE_SEG][3];
 	//each element of the argv array after zero is a space delimited
 	//input.  this allows/forces you to input two integers and then have
 	//them stored.  pretty cool amirite?
 	int startLocation = atoi(argv[1]);
 	int endLocation = atoi(argv[2]);
-	cout << startLocation << ' ' << endLocation << endl;
+	int mapData[LINE_SEG][3];
+	int a;
+	const char* dataPointer;
 	string data;
 	ifstream map ("map.csv");
-	getline(map, data, ',');
-	cout << data << endl;
+	currentLoc.location = startLocation;
+	//reads out the two input numbers
+	cout << startLocation << ' ' << endLocation << endl;
+
+	for(int i = 0; i < LINE_SEG; i++)
+	{
+		for(int n = 0; n < 2; n++)
+		{
+			getline(map, data, ',');
+			dataPointer = data.c_str();
+			a = atoi(dataPointer);
+			mapData[i][n] = a;
+		}
+		getline(map, data, '\n');
+		dataPointer = data.c_str();
+		a = atoi(dataPointer);
+		mapData[i][2] = a;
+	}
+	cout << data << endl << endl;
+	for(int i = 0; i < LINE_SEG - 1; i++)
+	{
+		cout << i + 1 << ' ';
+		for(int n = 0; n < 3; n++)
+		{
+			cout << mapData[i][n] << ' ';
+		}
+		cout << endl;
+	}
+	goToFrom(endLocation, currentLoc, mapData);
 	return 0; 
 }
