@@ -2,56 +2,55 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
-#define LINE_SEG 4
+#define LINE_SEG 3
 #define MX_LGTH_MP 84
 using namespace std;
 
 void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3], int pSum, int step, int pvPoint, int* addr, int* paddr)
 {
+	cout << "startLoc is thus: " << startLoc << endl;
 	for(int i = 0; i < LINE_SEG; i++)
 	{
-		if(map[i][1] == startLoc && map[i][2] != pvPoint)
+		if(map[i][0] == startLoc/* && map[i][2] != pvPoint*/)
 		{
-			int nPath[LINE_SEG];
-			for(int p = 0; p < LINE_SEG; p++)
-			{
-				nPath[p] = path[p];
-			}
-			pSum = pSum+map[i][0];
-			nPath[step] = i;
-			step++;
-			if(map[i][2] == endLoc)
-			{
-				if(pSum < *addr)
-				{
-					*addr = pSum;
-				}
-			}
-			else
-			{
-				pathFind(endLoc, map[i][1], nPath, map, pSum, step, startLoc, addr, paddr);
-			}
-		}
-		else if(map[i][2] == startLoc && map[i][1] != pvPoint)
-		{
-			int nPath[LINE_SEG];
-			for(int p = 0; p < LINE_SEG; p++)
-			{
-				nPath[p] = path[p];
-			}
-			pSum = pSum+map[i][0];
-			nPath[step] = i;
-			step++;
+			cout << "the point of comparison is " << map[i][0] << endl;
+			cout << "LineSegment: " << i << " is an option" << endl;
+			cout << "The other side of this line is: " << map[i][1] << endl;
+			cout << "last point was: " << pvPoint << endl;
 			if(map[i][1] == endLoc)
 			{
-				if(pSum < *addr)
-				{
-					*addr = pSum;
-				}
+				cout << "you made it." << endl;
 			}
 			else
 			{
-				pathFind(endLoc, map[i][1], nPath, map, pSum, step, startLoc, addr, paddr);
+				char answer;
+				cout << "would you like to take this line segment?" << endl;
+				cin >> answer;
+				if (answer == 'y')
+				{
+					pathFind(endLoc, map[i][1], path, map, pSum, step, pvPoint, addr, paddr);
+				}
+			}
+		}
+		if(map[i][1] == startLoc/* && map[i][1] != pvPoint*/)
+		{
+			cout << "the point of comparison is " << map[i][1] << endl;
+			cout << "LineSegment: " << i << "is an option" << endl;
+			cout << "The other side of this line is: " << map[i][0] << endl;
+			cout << "last point was: " << pvPoint << endl;
+			if(map[i][1] == endLoc)
+			{
+				cout << "you made it." << endl;
+			}
+			else
+			{
+				char answer;
+				cout << "would you like to take this line segment?" << endl;
+				cin >> answer;
+				if (answer == 'y')
+				{
+					pathFind(endLoc, map[i][0], path, map, pSum, step, pvPoint, addr, paddr);
+				}
 			}
 		}
 	}
@@ -68,19 +67,18 @@ int goToFrom(int endLoc, location startLoc, int map[LINE_SEG][3])
 	int* paddr = path;
 	int pDist = MX_LGTH_MP;
 	int* addr = &pDist;
-	int pSum = 0;
 	if(!startLoc.type)
 	{
 		int point1;
 		int point2;
 		point1 = map[startLoc.location][1];
 		point2 = map[startLoc.location][2];
-		pathFind(endLoc, point1, path, map, pSum, 0, 99, addr, paddr);
-		pathFind(endLoc, point2, path, map, pSum, 0, 99, addr, paddr);
+		pathFind(endLoc, point1, path, map, 0, 0, 99, addr, paddr);
+		pathFind(endLoc, point2, path, map, 0, 0, 99, addr, paddr);
 	}
 	else
 	{
-		pathFind(endLoc, startLoc.location, path, map, pSum, 0, 99, addr, paddr);
+		pathFind(endLoc, startLoc.location, path, map, 0, 0, 99, addr, paddr);
 	}
 	cout << pDist << endl;
 	for(int i = 0; path[i] != 0; i++)
@@ -106,6 +104,7 @@ int main(int argc, char* argv[]) {
 	string data;
 	ifstream map ("map.csv");
 	currentLoc.location = startLocation;
+	currentLoc.type = true;
 	//reads out the two input numbers
 	cout << startLocation << ' ' << endLocation << endl;
 
@@ -124,7 +123,7 @@ int main(int argc, char* argv[]) {
 		mapData[i][2] = a;
 	}
 	cout << data << endl << endl;
-	for(int i = 0; i < LINE_SEG - 1; i++)
+	for(int i = 0; i < LINE_SEG; i++)
 	{
 		cout << i + 1 << ' ';
 		for(int n = 0; n < 3; n++)
