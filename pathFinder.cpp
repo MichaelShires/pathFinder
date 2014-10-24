@@ -12,9 +12,13 @@ void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3]
 	{
 		if(map[i][1] == startLoc && map[i][2] != pvPoint)
 		{
-			
+			int nPath[LINE_SEG];
+			for(int p = 0; p < LINE_SEG; p++)
+			{
+				nPath[p] = path[p];
+			}
 			pSum = pSum+map[i][0];
-			path[step] = i;
+			nPath[step] = i;
 			step++;
 			if(map[i][2] == endLoc)
 			{
@@ -25,13 +29,18 @@ void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3]
 			}
 			else
 			{
-				pathFind(endLoc, map[i][1], path, map, pSum, step, startLoc, addr, paddr);
+				pathFind(endLoc, map[i][1], nPath, map, pSum, step, startLoc, addr, paddr);
 			}
 		}
 		else if(map[i][2] == startLoc && map[i][1] != pvPoint)
 		{
+			int nPath[LINE_SEG];
+			for(int p = 0; p < LINE_SEG; p++)
+			{
+				nPath[p] = path[p];
+			}
 			pSum = pSum+map[i][0];
-			path[step] = i;
+			nPath[step] = i;
 			step++;
 			if(map[i][1] == endLoc)
 			{
@@ -42,7 +51,7 @@ void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3]
 			}
 			else
 			{
-				pathFind(endLoc, map[i][1], path, map, pSum, step, startLoc, addr, paddr);
+				pathFind(endLoc, map[i][1], nPath, map, pSum, step, startLoc, addr, paddr);
 			}
 		}
 	}
