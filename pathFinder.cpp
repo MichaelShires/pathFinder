@@ -6,20 +6,27 @@
 #define MX_LGTH_MP 84
 using namespace std;
 
-void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3], int pSum, int step, int pvPoint, int* addr, int* paddr)
+int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3], int pSum, int step, int pvPoint, int* addr, int* paddr)
 {
 	cout << "startLoc is thus: " << startLoc << endl;
+	cout << "endLoc is thus: " << endLoc << endl;
 	for(int i = 0; i < LINE_SEG; i++)
 	{
-		if(map[i][0] == startLoc/* && map[i][2] != pvPoint*/)
+		if(map[i][0] == startLoc && map[i][1] != pvPoint)
 		{
 			cout << "the point of comparison is " << map[i][0] << endl;
 			cout << "LineSegment: " << i << " is an option" << endl;
-			cout << "The other side of this line is: " << map[i][1] << endl;
+			cout << "The other side of this line is: " << map[i][1] << "vs. " << endLoc << endl;
 			cout << "last point was: " << pvPoint << endl;
 			if(map[i][1] == endLoc)
 			{
-				cout << "you made it." << endl;
+				paddr[step] = map[i][0];
+				step++;
+				pSum = pSum + map[i][2];
+				cout << "you made it, And you wasted this much walking distance: " << pSum << endl;
+				cout << "you took this many steps: " << step << endl;
+				*addr = pSum;
+				return step;
 			}
 			else
 			{
@@ -28,19 +35,29 @@ void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3]
 				cin >> answer;
 				if (answer == 'y')
 				{
+					paddr[step] = map[i][0];
+					step++;
+					pSum = pSum + map[i][2];
+					pvPoint = map[i][0];
 					pathFind(endLoc, map[i][1], path, map, pSum, step, pvPoint, addr, paddr);
 				}
 			}
 		}
-		if(map[i][1] == startLoc/* && map[i][1] != pvPoint*/)
+		if(map[i][1] == startLoc && map[i][0] != pvPoint)
 		{
 			cout << "the point of comparison is " << map[i][1] << endl;
 			cout << "LineSegment: " << i << "is an option" << endl;
-			cout << "The other side of this line is: " << map[i][0] << endl;
+			cout << "The other side of this line is: " << map[i][0] << "vs. " << endLoc << endl;
 			cout << "last point was: " << pvPoint << endl;
 			if(map[i][1] == endLoc)
 			{
-				cout << "you made it." << endl;
+				paddr[step] = map[i][1];
+				step++;
+				pSum = pSum + map[i][2];
+				cout << "you made it, And you wasted this much walking distance: " << pSum << endl;
+				cout << "you took this many steps: " << step << endl;
+				*addr = pSum;
+				return step;
 			}
 			else
 			{
@@ -49,6 +66,10 @@ void pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3]
 				cin >> answer;
 				if (answer == 'y')
 				{
+					paddr[step] = map[i][1];
+					step++;
+					pSum = pSum + map[i][2];
+					pvPoint = map[i][1];
 					pathFind(endLoc, map[i][0], path, map, pSum, step, pvPoint, addr, paddr);
 				}
 			}
@@ -67,21 +88,29 @@ int goToFrom(int endLoc, location startLoc, int map[LINE_SEG][3])
 	int* paddr = path;
 	int pDist = MX_LGTH_MP;
 	int* addr = &pDist;
+	int step;
 	if(!startLoc.type)
 	{
 		int point1;
 		int point2;
+		int path1Step;
+		int path2Step;
 		point1 = map[startLoc.location][1];
 		point2 = map[startLoc.location][2];
-		pathFind(endLoc, point1, path, map, 0, 0, 99, addr, paddr);
-		pathFind(endLoc, point2, path, map, 0, 0, 99, addr, paddr);
+		path1Step = pathFind(endLoc, point1, path, map, 0, 0, 99, addr, paddr);
+		path2Step = pathFind(endLoc, point2, path, map, 0, 0, 99, addr, paddr);
+		if(path1Step > path2Step)
+		{
+			path1Step = path2Step;
+		}
+		step = path1Step;
 	}
 	else
 	{
-		pathFind(endLoc, startLoc.location, path, map, 0, 0, 99, addr, paddr);
+		step = pathFind(endLoc, startLoc.location, path, map, 0, 0, 99, addr, paddr);
 	}
 	cout << pDist << endl;
-	for(int i = 0; path[i] != 0; i++)
+	for(int i = 0; i < step-1; i++)
 	{
 		cout << path[i] << ' ';
 	}
