@@ -16,7 +16,7 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 		{
 			cout << "the point of comparison is " << map[i][0] << endl;
 			cout << "LineSegment: " << i << " is an option" << endl;
-			cout << "The other side of this line is: " << map[i][1] << "vs. " << endLoc << endl;
+			cout << "The other side of this line is: " << map[i][1] << " vs. " << endLoc << endl;
 			cout << "last point was: " << pvPoint << endl;
 			if(map[i][1] == endLoc)
 			{
@@ -39,7 +39,7 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 					step++;
 					pSum = pSum + map[i][2];
 					pvPoint = map[i][0];
-					pathFind(endLoc, map[i][1], path, map, pSum, step, pvPoint, addr, paddr);
+					return pathFind(endLoc, map[i][1], path, map, pSum, step, pvPoint, addr, paddr);
 				}
 			}
 		}
@@ -47,9 +47,9 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 		{
 			cout << "the point of comparison is " << map[i][1] << endl;
 			cout << "LineSegment: " << i << "is an option" << endl;
-			cout << "The other side of this line is: " << map[i][0] << "vs. " << endLoc << endl;
+			cout << "The other side of this line is: " << map[i][0] << " vs. " << endLoc << endl;
 			cout << "last point was: " << pvPoint << endl;
-			if(map[i][1] == endLoc)
+			if(map[i][0] == endLoc)
 			{
 				paddr[step] = map[i][1];
 				step++;
@@ -70,7 +70,7 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 					step++;
 					pSum = pSum + map[i][2];
 					pvPoint = map[i][1];
-					pathFind(endLoc, map[i][0], path, map, pSum, step, pvPoint, addr, paddr);
+					return pathFind(endLoc, map[i][0], path, map, pSum, step, pvPoint, addr, paddr);
 				}
 			}
 		}
