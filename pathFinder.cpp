@@ -2,9 +2,18 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
-#define LINE_SEG 3
+#define LINE_SEG 6
 #define MX_LGTH_MP 84
 using namespace std;
+
+struct location {
+	bool type; // true will be point, false is line
+	int location;
+} currentLoc;
+
+struct route {
+	int path[LINE_SEG];
+} routeway;
 
 int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3], int pSum, int step, int pvPoint, int* addr, int* paddr)
 {
@@ -20,7 +29,7 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 			cout << "last point was: " << pvPoint << endl;
 			if(map[i][1] == endLoc)
 			{
-				paddr[step] = map[i][0];
+				paddr[step] = i;
 				step++;
 				pSum = pSum + map[i][2];
 				cout << "you made it, And you wasted this much walking distance: " << pSum << endl;
@@ -35,7 +44,7 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 				cin >> answer;
 				if (answer == 'y')
 				{
-					paddr[step] = map[i][0];
+					paddr[step] = i;
 					step++;
 					pSum = pSum + map[i][2];
 					pvPoint = map[i][0];
@@ -51,7 +60,7 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 			cout << "last point was: " << pvPoint << endl;
 			if(map[i][0] == endLoc)
 			{
-				paddr[step] = map[i][1];
+				paddr[step] = i;
 				step++;
 				pSum = pSum + map[i][2];
 				cout << "you made it, And you wasted this much walking distance: " << pSum << endl;
@@ -66,7 +75,7 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 				cin >> answer;
 				if (answer == 'y')
 				{
-					paddr[step] = map[i][1];
+					paddr[step] = i;
 					step++;
 					pSum = pSum + map[i][2];
 					pvPoint = map[i][1];
@@ -77,15 +86,12 @@ int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3],
 	}
 }
 
-struct location {
-	bool type; // true will be point, false is line
-	int location;
-} currentLoc;
-
 int goToFrom(int endLoc, location startLoc, int map[LINE_SEG][3])
 {
 	int path[LINE_SEG] = {0};
 	int* paddr = path;
+	int pVisited[LINE_SEG] = {0};
+	int* vaddr = pVisited;
 	int pDist = MX_LGTH_MP;
 	int* addr = &pDist;
 	int step;
@@ -110,7 +116,7 @@ int goToFrom(int endLoc, location startLoc, int map[LINE_SEG][3])
 		step = pathFind(endLoc, startLoc.location, path, map, 0, 0, 99, addr, paddr);
 	}
 	cout << pDist << endl;
-	for(int i = 0; i < step-1; i++)
+	for(int i = 0; i < step; i++)
 	{
 		cout << path[i] << ' ';
 	}
