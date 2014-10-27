@@ -6,13 +6,22 @@
 #define MX_LGTH_MP 84
 using namespace std;
 
+int pDist = MX_LGTH_MP;
+
 struct location {
 	bool type; // true will be point, false is line
 	int location;
 } currentLoc;
 
 struct route {
+	int endLoc;
+	int startLoc;
 	int path[LINE_SEG];
+	int map[LINE_SEG][3];
+	int pSum;
+	int step;
+	int pvPoint;
+	int path[LINE_SEG] = {0};
 } routeway;
 
 int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3], int pSum, int step, int pvPoint, int* addr, int* paddr)
