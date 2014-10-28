@@ -7,129 +7,171 @@
 using namespace std;
 
 int pDist = MX_LGTH_MP;
+int shortestPath[LINE_SEG] = {0};
 
 struct location {
 	bool type; // true will be point, false is line
 	int location;
 } currentLoc;
 
-struct route {
-	int endLoc;
-	int startLoc;
-	int path[LINE_SEG];
-	int map[LINE_SEG][3];
-	int pSum;
-	int step;
-	int pvPoint;
-	int path[LINE_SEG] = {0};
-} routeway;
+struct Route {
+	int initStart;		//the initial start location.  good for diagnostics
+	int endLoc;		//the all holy end location.  where you are going
+	int startLoc;		//the current "start" location.  used for which point you are considering yourself at
+	int path[99];		//the path so far
+	int map[LINE_SEG][3];	//the map data pulled from map.csv
+	int pSum;		//the total distance of this path so far
+	int step;		//which step you are on now.  Useful for attaining final path without non-zero check in whitespace
+	int pvPoint;		//the last point visited.  useful for just not going backwards and being dumb.  like you
+};
 
-int pathFind(int endLoc, int startLoc, int path[LINE_SEG], int map[LINE_SEG][3], int pSum, int step, int pvPoint, int* addr, int* paddr)
+int pathFind(Route route)
 {
-	cout << "startLoc is thus: " << startLoc << endl;
-	cout << "endLoc is thus: " << endLoc << endl;
+	cout << "initStart is: " << route.initStart << endl;
+	cout << "startLoc is thus: " << route.startLoc << endl;
+	cout << "endLoc is thus: " << route.endLoc << endl;
+	bool notVisited = true;
 	for(int i = 0; i < LINE_SEG; i++)
 	{
-		if(map[i][0] == startLoc && map[i][1] != pvPoint)
+		if(route.map[i][0] == route.startLoc && route.map[i][1] != route.pvPoint)
 		{
-			cout << "the point of comparison is " << map[i][0] << endl;
-			cout << "LineSegment: " << i << " is an option" << endl;
-			cout << "The other side of this line is: " << map[i][1] << " vs. " << endLoc << endl;
-			cout << "last point was: " << pvPoint << endl;
-			if(map[i][1] == endLoc)
+			for(int k = 0; k < route.step; k++)
 			{
-				paddr[step] = i;
-				step++;
-				pSum = pSum + map[i][2];
-				cout << "you made it, And you wasted this much walking distance: " << pSum << endl;
-				cout << "you took this many steps: " << step << endl;
-				*addr = pSum;
-				return step;
-			}
-			else
-			{
-				char answer;
-				cout << "would you like to take this line segment?" << endl;
-				cin >> answer;
-				if (answer == 'y')
+				if(route.path[k] == i)
 				{
-					paddr[step] = i;
-					step++;
-					pSum = pSum + map[i][2];
-					pvPoint = map[i][0];
-					return pathFind(endLoc, map[i][1], path, map, pSum, step, pvPoint, addr, paddr);
+					notVisited = false;
+					cout << "you've already been there silly!" << endl;
+				}
+			}
+			if(notVisited)
+			{
+				cout << "the point of comparison is " << route.map[i][0] << endl;
+				cout << "LineSegment: " << i << " is an option" << endl;
+				cout << "The other side of this line is: " << route.map[i][1] << " vs. " << route.endLoc << endl;
+				cout << "last point was: " << route.pvPoint << endl;
+				if(route.map[i][1] == route.endLoc)
+				{
+					route.path[route.step] = i;
+					route.step++;
+					route.pSum = route.pSum + route.map[i][2];
+					cout << "you made it, And you wasted this much walking distance: " << route.pSum << endl;
+					cout << "you took this many steps: " << route.step << " and pDist is this: " << pDist << endl;
+					if(route.pSum < pDist)
+					{
+						cout << "Excellent! this path was faster!" << endl;
+						pDist = route.pSum;
+					}
+					return route.step;
+				}
+				else
+				{
+					char answer;
+					cout << "would you like to take this line segment?" << endl;
+					cin >> answer;
+					if (answer == 'y')
+					{
+						Route newRoute = route;
+						newRoute.path[newRoute.step] = i;
+						newRoute.step++;
+						newRoute.pSum = newRoute.pSum + newRoute.map[i][2];
+						newRoute.pvPoint = newRoute.map[i][0];
+						newRoute.startLoc = route.map[i][1];
+						pathFind(newRoute);
+					}
 				}
 			}
 		}
-		if(map[i][1] == startLoc && map[i][0] != pvPoint)
+		if(route.map[i][1] == route.startLoc && route.map[i][0] != route.pvPoint)
 		{
-			cout << "the point of comparison is " << map[i][1] << endl;
-			cout << "LineSegment: " << i << "is an option" << endl;
-			cout << "The other side of this line is: " << map[i][0] << " vs. " << endLoc << endl;
-			cout << "last point was: " << pvPoint << endl;
-			if(map[i][0] == endLoc)
+			for(int k = 0; k < route.step; k++)
 			{
-				paddr[step] = i;
-				step++;
-				pSum = pSum + map[i][2];
-				cout << "you made it, And you wasted this much walking distance: " << pSum << endl;
-				cout << "you took this many steps: " << step << endl;
-				*addr = pSum;
-				return step;
-			}
-			else
-			{
-				char answer;
-				cout << "would you like to take this line segment?" << endl;
-				cin >> answer;
-				if (answer == 'y')
+				if(route.path[k] == i)
 				{
-					paddr[step] = i;
-					step++;
-					pSum = pSum + map[i][2];
-					pvPoint = map[i][1];
-					return pathFind(endLoc, map[i][0], path, map, pSum, step, pvPoint, addr, paddr);
+					notVisited = false;
+					cout << "you've already been there silly!" << endl;
+				}
+			}
+			if(notVisited)
+			{
+				cout << "the point of comparison is " << route.map[i][1] << endl;
+				cout << "LineSegment: " << i << "is an option" << endl;
+				cout << "The other side of this line is: " << route.map[i][0] << " vs. " << route.endLoc << endl;
+				cout << "last point was: " << route.pvPoint << endl;
+				if(route.map[i][0] == route.endLoc)
+				{
+					route.path[route.step] = i;
+					route.step++;
+					route.pSum = route.pSum + route.map[i][2];
+					cout << "you made it, And you wasted this much walking distance: " << route.pSum << endl;
+					cout << "you took this many steps: " << route.step << " and pDist is this: " << pDist << endl;
+					if(route.pSum < pDist)
+					{
+						cout << "Excellent! this path was faster!" << endl;
+						pDist = route.pSum;
+					}
+					return route.step;
+				}
+				else
+				{
+					char answer;
+					cout << "would you like to take this line segment?" << endl;
+					cin >> answer;
+					if (answer == 'y')
+					{
+						Route newRoute = route;
+						newRoute.path[newRoute.step] = i;
+						newRoute.step++;
+						newRoute.pSum = newRoute.pSum + newRoute.map[i][2];
+						newRoute.pvPoint = newRoute.map[i][1];
+						newRoute.startLoc = newRoute.map[i][0];
+						pathFind(newRoute);
+					}
 				}
 			}
 		}
 	}
 }
 
-int goToFrom(int endLoc, location startLoc, int map[LINE_SEG][3])
-{
-	int path[LINE_SEG] = {0};
-	int* paddr = path;
-	int pVisited[LINE_SEG] = {0};
-	int* vaddr = pVisited;
-	int pDist = MX_LGTH_MP;
-	int* addr = &pDist;
-	int step;
-	if(!startLoc.type)
+Route initRoute(int startLoc, int endLoc) {
+	Route blankRoute;
+	blankRoute.initStart = startLoc;
+	blankRoute.startLoc = startLoc;
+	blankRoute.endLoc = endLoc;
+	blankRoute.pSum = 0;
+	blankRoute.step = 0;
+	blankRoute.pvPoint = 99;
+	int a;
+	const char* dataPointer;
+	string data;
+	ifstream map ("map.csv");
+	//reads out the two input numbers
+	cout << blankRoute.initStart << ' ' << blankRoute.endLoc << endl;
+
+	for(int i = 0; i < LINE_SEG; i++)
 	{
-		int point1;
-		int point2;
-		int path1Step;
-		int path2Step;
-		point1 = map[startLoc.location][1];
-		point2 = map[startLoc.location][2];
-		path1Step = pathFind(endLoc, point1, path, map, 0, 0, 99, addr, paddr);
-		path2Step = pathFind(endLoc, point2, path, map, 0, 0, 99, addr, paddr);
-		if(path1Step > path2Step)
+		for(int n = 0; n < 2; n++)
 		{
-			path1Step = path2Step;
+			getline(map, data, ',');
+			dataPointer = data.c_str();
+			a = atoi(dataPointer);
+			blankRoute.map[i][n] = a;
 		}
-		step = path1Step;
+		getline(map, data, '\n');
+		dataPointer = data.c_str();
+		a = atoi(dataPointer);
+		blankRoute.map[i][2] = a;
 	}
-	else
+	cout << data << endl << endl;
+	for(int i = 0; i < LINE_SEG; i++)
 	{
-		step = pathFind(endLoc, startLoc.location, path, map, 0, 0, 99, addr, paddr);
+		cout << i + 1 << ' ';
+		for(int n = 0; n < 3; n++)
+		{
+			cout << blankRoute.map[i][n] << ' ';
+		}
+		cout << endl;
 	}
-	cout << pDist << endl;
-	for(int i = 0; i < step; i++)
-	{
-		cout << path[i] << ' ';
-	}
-	cout << endl;
+	return blankRoute;
 }
 
 /*
@@ -140,42 +182,19 @@ int main(int argc, char* argv[]) {
 	//each element of the argv array after zero is a space delimited
 	//input.  this allows/forces you to input two integers and then have
 	//them stored.  pretty cool amirite?
-	int startLocation = atoi(argv[1]);
-	int endLocation = atoi(argv[2]);
-	int mapData[LINE_SEG][3];
-	int a;
-	const char* dataPointer;
-	string data;
-	ifstream map ("map.csv");
-	currentLoc.location = startLocation;
-	currentLoc.type = true;
-	//reads out the two input numbers
-	cout << startLocation << ' ' << endLocation << endl;
-
-	for(int i = 0; i < LINE_SEG; i++)
+	int initStart = atoi(argv[1]);
+	cout << "initstart is: " << initStart << endl;
+	int endLoc = atoi(argv[2]);
+	Route route = initRoute(initStart, endLoc);
+	//goToFrom(endLocation, currentLoc, mapData);
+	char answer = 'y';
+	while(answer == 'y')
 	{
-		for(int n = 0; n < 2; n++)
-		{
-			getline(map, data, ',');
-			dataPointer = data.c_str();
-			a = atoi(dataPointer);
-			mapData[i][n] = a;
-		}
-		getline(map, data, '\n');
-		dataPointer = data.c_str();
-		a = atoi(dataPointer);
-		mapData[i][2] = a;
+		
+		pathFind(route);
+		cout << "would you like to try again?" << endl;
+		cin >> answer;
 	}
-	cout << data << endl << endl;
-	for(int i = 0; i < LINE_SEG; i++)
-	{
-		cout << i + 1 << ' ';
-		for(int n = 0; n < 3; n++)
-		{
-			cout << mapData[i][n] << ' ';
-		}
-		cout << endl;
-	}
-	goToFrom(endLocation, currentLoc, mapData);
+	cout << "the fastest path you found between " << initStart << " and " << endLoc << " was " << pDist << " meters long." << endl;
 	return 0; 
 }
