@@ -2,8 +2,8 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
-#define LINE_SEG 6
-#define MX_LGTH_MP 84
+#define LINE_SEG 21
+#define MX_LGTH_MP 1023
 using namespace std;
 
 int pDist = MX_LGTH_MP;
@@ -18,7 +18,7 @@ struct Route {
 	int initStart;		//the initial start location.  good for diagnostics
 	int endLoc;		//the all holy end location.  where you are going
 	int startLoc;		//the current "start" location.  used for which point you are considering yourself at
-	int path[99];		//the path so far
+	int path[1023];		//the path so far
 	int map[LINE_SEG][3];	//the map data pulled from map.csv
 	int pSum;		//the total distance of this path so far
 	int step;		//which step you are on now.  Useful for attaining final path without non-zero check in whitespace
@@ -67,8 +67,8 @@ int pathFind(Route route)
 				{
 					char answer;
 					cout << "would you like to take this line segment?" << endl;
-					cin >> answer;
-					if (answer == 'y')
+					//cin >> answer;
+					if (true)
 					{
 						Route newRoute = route;
 						newRoute.path[newRoute.step] = i;
@@ -115,8 +115,8 @@ int pathFind(Route route)
 				{
 					char answer;
 					cout << "would you like to take this line segment?" << endl;
-					cin >> answer;
-					if (answer == 'y')
+					//cin >> answer;
+					if (true)
 					{
 						Route newRoute = route;
 						newRoute.path[newRoute.step] = i;
@@ -143,7 +143,7 @@ Route initRoute(int startLoc, int endLoc) {
 	int a;
 	const char* dataPointer;
 	string data;
-	ifstream map ("map.csv");
+	ifstream map ("map1.csv");
 	//reads out the two input numbers
 	cout << blankRoute.initStart << ' ' << blankRoute.endLoc << endl;
 
@@ -188,13 +188,7 @@ int main(int argc, char* argv[]) {
 	Route route = initRoute(initStart, endLoc);
 	//goToFrom(endLocation, currentLoc, mapData);
 	char answer = 'y';
-	while(answer == 'y')
-	{
-		
-		pathFind(route);
-		cout << "would you like to try again?" << endl;
-		cin >> answer;
-	}
+	pathFind(route);
 	cout << "the fastest path you found between " << initStart << " and " << endLoc << " was " << pDist << " meters long." << endl;
 	return 0; 
 }
