@@ -93,6 +93,7 @@ int pathFind(Route route)
 					if(route.pSum < pDist)
 					{
 						pDist = route.pSum;
+						pStep = route.step;
 						for(int s = 0; s < route.step; s++)
 						{
 							shortestPath[s] = route.path[s];
@@ -154,7 +155,7 @@ Route initRoute(int startLoc, int endLoc) {
 
 void findFastestPath(Route route) {
 	pathFind(route);
-	cout << route.initStart << ' ' << route.endLoc << ' ' << pDist << ' ' << pStep << ' ' << "p: ";
+	cout << route.initStart << ',' << route.endLoc << ',' << pDist << ',' << pStep << ',';
 	for(int i = 0; i < pStep; i++)
 	{
 		cout << shortestPath[i] << ' ';
@@ -180,13 +181,13 @@ int main(int argc, char* argv[]) {
 	int endLoc = atoi(argv[2]);
 	Route route = initRoute(initStart, endLoc);
 	findFastestPath(route);
-	/*for(int stt = 1; stt < VERTEX+1; stt++)
+	for(int stt = 1; stt < VERTEX+1; stt++)
 		{
 			for(int end = 1; end < VERTEX+1; end++)
 				{
 					route = initRoute(stt, end);
 					findFastestPath(route);
 				}
-		}*/
+		}
 	return 0;
 }
