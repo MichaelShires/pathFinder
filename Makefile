@@ -1,7 +1,7 @@
 all: pathFinder
 
-pathFinder: pathFinder.o
-	g++ -g pathFinder.cpp -o pathFinder
+pathFinder: pathFinder.c
+	gcc -std=c99 pathFinder.c -o pathFinder
 
 clean:
 	rm -rf *.o pathFinder *~
